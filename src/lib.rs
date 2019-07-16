@@ -1,3 +1,4 @@
-pub mod first;
-pub mod second;
-pub mod third;
+pub mod basic_stack;
+pub mod stack;
+pub mod persistent_stack;
+pub mod basic_dequeue;
