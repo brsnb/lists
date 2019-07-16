@@ -1,7 +1,7 @@
 use std::cell::{Ref, RefCell, RefMut};
 use std::rc::Rc;
 
-pub struct List<T> {
+pub struct Dequeue<T> {
     head: Link<T>,
     tail: Link<T>,
 }
@@ -24,9 +24,9 @@ impl<T> Node<T> {
     }
 }
 
-impl<T> List<T> {
-    pub fn new() -> List<T> {
-        List {
+impl<T> Dequeue<T> {
+    pub fn new() -> Dequeue<T> {
+        Dequeue {
             head: None,
             tail: None,
         }
@@ -121,13 +121,13 @@ impl<T> List<T> {
     }
 }
 
-impl<T> Drop for List<T> {
+impl<T> Drop for Dequeue<T> {
     fn drop(&mut self) {
         while self.pop_front().is_some() {}
     }
 }
 
-pub struct IntoIter<T>(List<T>);
+pub struct IntoIter<T>(Dequeue<T>);
 
 impl<T> Iterator for IntoIter<T> {
     type Item = T;
@@ -145,87 +145,87 @@ impl<T> DoubleEndedIterator for IntoIter<T> {
 
 #[cfg(test)]
 mod test {
-    use super::List;
+    use super::Dequeue;
     #[test]
     fn basics() {
-        let mut list = List::new();
+        let mut dequeue = Dequeue::new();
 
-        // Check empty list behaves right
-        assert_eq!(list.pop_front(), None);
+        // Check empty dequeue behaves right
+        assert_eq!(dequeue.pop_front(), None);
 
-        // Populate list
-        list.push_front(1);
-        list.push_front(2);
-        list.push_front(3);
+        // Populate dequeue
+        dequeue.push_front(1);
+        dequeue.push_front(2);
+        dequeue.push_front(3);
 
         // Check normal removal
-        assert_eq!(list.pop_front(), Some(3));
-        assert_eq!(list.pop_front(), Some(2));
+        assert_eq!(dequeue.pop_front(), Some(3));
+        assert_eq!(dequeue.pop_front(), Some(2));
 
         // Push some more just to make sure nothing's corrupted
-        list.push_front(4);
-        list.push_front(5);
+        dequeue.push_front(4);
+        dequeue.push_front(5);
 
         // Check normal removal
-        assert_eq!(list.pop_front(), Some(5));
-        assert_eq!(list.pop_front(), Some(4));
+        assert_eq!(dequeue.pop_front(), Some(5));
+        assert_eq!(dequeue.pop_front(), Some(4));
 
         // Check exhaustion
-        assert_eq!(list.pop_front(), Some(1));
-        assert_eq!(list.pop_front(), None);
+        assert_eq!(dequeue.pop_front(), Some(1));
+        assert_eq!(dequeue.pop_front(), None);
 
         // ---- back -----
 
-        // Check empty list behaves right
-        assert_eq!(list.pop_back(), None);
+        // Check empty dequeue behaves right
+        assert_eq!(dequeue.pop_back(), None);
 
-        // Populate list
-        list.push_back(1);
-        list.push_back(2);
-        list.push_back(3);
+        // Populate dequeue
+        dequeue.push_back(1);
+        dequeue.push_back(2);
+        dequeue.push_back(3);
 
         // Check normal removal
-        assert_eq!(list.pop_back(), Some(3));
-        assert_eq!(list.pop_back(), Some(2));
+        assert_eq!(dequeue.pop_back(), Some(3));
+        assert_eq!(dequeue.pop_back(), Some(2));
 
         // Push some more just to make sure nothing's corrupted
-        list.push_back(4);
-        list.push_back(5);
+        dequeue.push_back(4);
+        dequeue.push_back(5);
 
         // Check normal removal
-        assert_eq!(list.pop_back(), Some(5));
-        assert_eq!(list.pop_back(), Some(4));
+        assert_eq!(dequeue.pop_back(), Some(5));
+        assert_eq!(dequeue.pop_back(), Some(4));
 
         // Check exhaustion
-        assert_eq!(list.pop_back(), Some(1));
-        assert_eq!(list.pop_back(), None);
+        assert_eq!(dequeue.pop_back(), Some(1));
+        assert_eq!(dequeue.pop_back(), None);
     }
 
     #[test]
     fn peek() {
-        let mut list = List::new();
-        assert!(list.peek_front().is_none());
-        assert!(list.peek_back().is_none());
-        assert!(list.peek_front_mut().is_none());
-        assert!(list.peek_back_mut().is_none());
+        let mut dequeue = Dequeue::new();
+        assert!(dequeue.peek_front().is_none());
+        assert!(dequeue.peek_back().is_none());
+        assert!(dequeue.peek_front_mut().is_none());
+        assert!(dequeue.peek_back_mut().is_none());
 
-        list.push_front(1);
-        list.push_front(2);
-        list.push_front(3);
+        dequeue.push_front(1);
+        dequeue.push_front(2);
+        dequeue.push_front(3);
 
-        assert_eq!(&*list.peek_front().unwrap(), &3);
-        assert_eq!(&mut *list.peek_front_mut().unwrap(), &mut 3);
-        assert_eq!(&*list.peek_back().unwrap(), &1);
-        assert_eq!(&mut *list.peek_back_mut().unwrap(), &mut 1);
+        assert_eq!(&*dequeue.peek_front().unwrap(), &3);
+        assert_eq!(&mut *dequeue.peek_front_mut().unwrap(), &mut 3);
+        assert_eq!(&*dequeue.peek_back().unwrap(), &1);
+        assert_eq!(&mut *dequeue.peek_back_mut().unwrap(), &mut 1);
     }
 
     fn into_iter() {
-        let mut list = List::new();
-        list.push_front(1);
-        list.push_front(2);
-        list.push_front(3);
+        let mut dequeue = Dequeue::new();
+        dequeue.push_front(1);
+        dequeue.push_front(2);
+        dequeue.push_front(3);
 
-        let mut iter = list.into_iter();
+        let mut iter = dequeue.into_iter();
         assert_eq!(iter.next(), Some(3));
         assert_eq!(iter.next_back(), Some(1));
         assert_eq!(iter.next(), Some(2));

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-pub struct List<T> {
+pub struct Stack<T> {
     head: Link<T>,
 }
 
@@ -11,13 +11,13 @@ struct Node<T> {
     next: Link<T>,
 }
 
-impl<T> List<T> {
-    pub fn new() -> List<T> {
-        List { head: None }
+impl<T> Stack<T> {
+    pub fn new() -> Stack<T> {
+        Stack { head: None }
     }
 
-    pub fn append(&self, elem: T) -> List<T> {
-        List {
+    pub fn append(&self, elem: T) -> Stack<T> {
+        Stack {
             head: Some(Rc::new(Node {
                 elem,
                 next: self.head.clone(),
@@ -25,8 +25,8 @@ impl<T> List<T> {
         }
     }
 
-    pub fn tail(&self) -> List<T> {
-        List {
+    pub fn tail(&self) -> Stack<T> {
+        Stack {
             head: self.head.as_ref().and_then(|node| node.next.clone()),
         }
     }
@@ -42,7 +42,7 @@ impl<T> List<T> {
     }
 }
 
-impl<T> Drop for List<T> {
+impl<T> Drop for Stack<T> {
     fn drop(&mut self) {
         let mut head = self.head.take();
         while let Some(node) = head {
@@ -72,33 +72,33 @@ impl<'a, T> Iterator for Iter<'a, T> {
 
 #[cfg(test)]
 mod test {
-    use super::List;
+    use super::Stack;
 
     #[test]
     fn basics() {
-        let list = List::new();
-        assert_eq!(list.head(), None);
+        let stack = Stack::new();
+        assert_eq!(stack.head(), None);
 
-        let list = list.append(1).append(2).append(3);
-        assert_eq!(list.head(), Some(&3));
+        let stack = stack.append(1).append(2).append(3);
+        assert_eq!(stack.head(), Some(&3));
 
-        let list = list.tail();
-        assert_eq!(list.head(), Some(&2));
+        let stack = stack.tail();
+        assert_eq!(stack.head(), Some(&2));
 
-        let list = list.tail();
-        assert_eq!(list.head(), Some(&1));
+        let stack = stack.tail();
+        assert_eq!(stack.head(), Some(&1));
 
-        let list = list.tail();
-        assert_eq!(list.head(), None);
+        let stack = stack.tail();
+        assert_eq!(stack.head(), None);
 
-        let list = list.tail();
-        assert_eq!(list.head(), None);
+        let stack = stack.tail();
+        assert_eq!(stack.head(), None);
     }
 
     #[test]
     fn iter() {
-        let list = List::new().append(1).append(2).append(3);
-        let mut iter = list.iter();
+        let stack = Stack::new().append(1).append(2).append(3);
+        let mut iter = stack.iter();
 
         assert_eq!(iter.next(), Some(&3));
         assert_eq!(iter.next(), Some(&2));

@@ -1,6 +1,6 @@
 use std::mem;
 
-pub struct List<T> {
+pub struct Stack<T> {
     head: Link<T>,
 }
 
@@ -14,9 +14,9 @@ struct Node<T> {
     next: Link<T>,
 }
 
-impl<T> List<T> {
-    pub fn new() -> List<T> {
-        List { head: Link::Empty }
+impl<T> Stack<T> {
+    pub fn new() -> Stack<T> {
+        Stack { head: Link::Empty }
     }
 
     pub fn push(&mut self, elem: T) {
@@ -39,7 +39,7 @@ impl<T> List<T> {
     }
 }
 
-impl<T> Drop for List<T> {
+impl<T> Drop for Stack<T> {
     fn drop(&mut self) {
         let mut link = mem::replace(&mut self.head, Link::Empty);
         while let Link::More(mut boxed_node) = link {
@@ -52,23 +52,23 @@ impl<T> Drop for List<T> {
 mod tests {
     #[test]
     fn basics() {
-        let mut list: super::List<i32> = super::List::new();
+        let mut stack: super::Stack<i32> = super::Stack::new();
 
-        assert_eq!(list.pop(), None);
+        assert_eq!(stack.pop(), None);
 
-        list.push(1);
-        list.push(2);
-        list.push(3);
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
 
-        assert_eq!(list.pop(), Some(3));
-        assert_eq!(list.pop(), Some(2));
+        assert_eq!(stack.pop(), Some(3));
+        assert_eq!(stack.pop(), Some(2));
 
-        list.push(4);
-        list.push(5);
+        stack.push(4);
+        stack.push(5);
 
-        assert_eq!(list.pop(), Some(5));
-        assert_eq!(list.pop(), Some(4));
-        assert_eq!(list.pop(), Some(1));
-        assert_eq!(list.pop(), None);
+        assert_eq!(stack.pop(), Some(5));
+        assert_eq!(stack.pop(), Some(4));
+        assert_eq!(stack.pop(), Some(1));
+        assert_eq!(stack.pop(), None);
     }
 }
