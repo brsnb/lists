@@ -77,6 +77,16 @@ impl<T> Queue<T> {
     }
 }
 
+
+impl<T> Drop for Queue<T> {
+    fn drop(&mut self) {
+        let mut cur_link = self.head.take();
+        while let Some(mut boxed_node) = cur_link {
+            cur_link = boxed_node.next.take();
+        }
+    }
+}
+
 pub struct IntoIter<T>(Queue<T>);
 
 impl<T> Iterator for IntoIter<T> {
